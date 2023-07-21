@@ -38,6 +38,9 @@ dependencies:
   is_first_run: ^1.0.0
   buttons_tabbar: ^1.3.7+1
   http: ^1.1.0
+  provider: ^6.0.5
+  go_router: ^9.1.1
+
 
 dev_dependencies:
   flutter_test:

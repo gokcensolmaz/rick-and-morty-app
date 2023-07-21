@@ -1,20 +1,15 @@
-import 'dart:convert';
-
-List<LocationModel> locationModelResponseFromJson(String str) => LocationModel.fromJson(json.decode(str));
-String locationModelResponseToJson(LocationModel data) => json.encode(data.toJson());
-
 class LocationModel {
   Info? info;
-  List<Locations>? results;
+  List<Location>? results;
 
   LocationModel({this.info, this.results});
 
   LocationModel.fromJson(Map<String, dynamic> json) {
-    info = json['info'] != null ? new Info.fromJson(json['info']) : null;
+    info = json['info'] != null ? Info.fromJson(json['info']) : null;
     if (json['results'] != null) {
-      results = <Locations>[];
+      results = <Location>[];
       json['results'].forEach((v) {
-        results!.add(new Locations.fromJson(v));
+        results!.add(Location.fromJson(v));
       });
     }
   }
@@ -56,7 +51,7 @@ class Info {
   }
 }
 
-class Locations {
+class Location {
   int? id;
   String? name;
   String? type;
@@ -65,7 +60,7 @@ class Locations {
   String? url;
   String? created;
 
-  Locations(
+  Location(
       {this.id,
         this.name,
         this.type,
@@ -74,7 +69,7 @@ class Locations {
         this.url,
         this.created});
 
-  Locations.fromJson(Map<String, dynamic> json) {
+  Location.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     type = json['type'];

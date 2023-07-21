@@ -1,45 +1,47 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:rickandmorty_flutter/api_constants.dart';
 import 'package:rickandmorty_flutter/models/character_model.dart';
 import 'package:rickandmorty_flutter/models/episode_model.dart';
 import 'package:rickandmorty_flutter/models/location_model.dart';
 
-class ApiService{
-  Future<CharacterModel?> getCharacter() async {
-    try {
-      var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.charactersEndpoint);
-      var response = await http.get(url);
-      if (response.statusCode == 200) {
-        CharacterModel _model = characterModelResponseFromJson(response.body);
-        return _model;
-      }
-    } catch (e) {
-      log(e.toString());
-    }
+class ApiProvider with ChangeNotifier {
+  String baseUrl = 'rickandmortyapi.com';
+  String charactersEndpoint = '/api/character';
+  String locationsEndpoint = '/api/location';
+  String episodesEndpoint = '/api/episode';
+  List<Location> locations = [];
+  List<Location> characters = [];
+
+
+  Future<void> getLocations() async {
+    final result = await http.get(Uri.https(baseUrl, locationsEndpoint));
+    final response = LocationModel.fromJson(json.decode(result.body));
+    locations.addAll(response.results ?? []);
+    notifyListeners();
   }
-  Future<Locations?> getLocation() async {
-    try {
-      var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.locationsEndpoint);
-      var response = await http.get(url);
-      if (response.statusCode == 200) {
-        List<LocationModel> _model = Locations().fromJson(response.body);
-        return _model;
-      }
-    } catch (e) {
-      log(e.toString());
-    }
+  Future<Location> getLocationById(int? locationId) async {
+    final result = await http.get(Uri.parse('http://$baseUrl$locationsEndpoint/$locationId'));
+    final response = Location.fromJson(json.decode(result.body));
+    return response;
   }
-  Future<EpisodeModel?> getEpisode() async {
-    try {
-      var url = Uri.parse(ApiConstants.baseUrl + ApiConstants.episodesEndpoint);
-      var response = await http.get(url);
-      if (response.statusCode == 200) {
-        EpisodeModel _model = episodeModelResponseFromJson(response.body);
-        return _model;
-      }
-    } catch (e) {
-      log(e.toString());
-    }
+
+  Future<Character> getCharacterByUrl(String characterUrl) async {
+    final result = await http.get(Uri.parse(characterUrl));
+    final response = Character.fromJson(json.decode(result.body));
+    return response;
   }
+
+
+  /*Future<void> getEpisodes() async {
+    final result = await http.get(Uri.https('$baseUrl/$episodesEndpoint'));
+    final response =  EpisodeModel.fromJson(json.decode(result.body));
+    print(response.results);
+  }
+  Future<void> getCharacters() async {
+    final result = await http.get(Uri.https('$baseUrl/$charactersEndpoint'));
+    final response =  CharacterModel.fromJson(json.decode(result.body));
+    print(response.results);
+  }*/
 }

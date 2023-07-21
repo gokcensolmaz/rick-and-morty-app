@@ -1,20 +1,15 @@
-import 'dart:convert';
-
-CharacterModel characterModelResponseFromJson(String str) => CharacterModel.fromJson(json.decode(str));
-String characterModelResponseToJson(CharacterModel data) => json.encode(data.toJson());
-
 class CharacterModel {
   Info? info;
-  List<Character>? characters;
+  List<Character>? results;
 
-  CharacterModel({this.info, this.characters});
+  CharacterModel({this.info, this.results});
 
   CharacterModel.fromJson(Map<String, dynamic> json) {
     info = json['info'] != null ? new Info.fromJson(json['info']) : null;
     if (json['results'] != null) {
-      characters = <Character>[];
+      results = <Character>[];
       json['results'].forEach((v) {
-        characters!.add(new Character.fromJson(v));
+        results!.add(new Character.fromJson(v));
       });
     }
   }
@@ -24,8 +19,8 @@ class CharacterModel {
     if (this.info != null) {
       data['info'] = this.info!.toJson();
     }
-    if (this.characters != null) {
-      data['results'] = this.characters!.map((v) => v.toJson()).toList();
+    if (this.results != null) {
+      data['results'] = this.results!.map((v) => v.toJson()).toList();
     }
     return data;
   }

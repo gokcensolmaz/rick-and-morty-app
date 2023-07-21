@@ -1,20 +1,15 @@
-import 'dart:convert';
-
-EpisodeModel episodeModelResponseFromJson(String str) => EpisodeModel.fromJson(json.decode(str));
-String episodeModelResponseToJson(EpisodeModel data) => json.encode(data.toJson());
-
 class EpisodeModel {
   Info? info;
-  List<Results>? results;
+  List<Episode>? results;
 
   EpisodeModel({this.info, this.results});
 
   EpisodeModel.fromJson(Map<String, dynamic> json) {
     info = json['info'] != null ? new Info.fromJson(json['info']) : null;
     if (json['results'] != null) {
-      results = <Results>[];
+      results = <Episode>[];
       json['results'].forEach((v) {
-        results!.add(new Results.fromJson(v));
+        results!.add(new Episode.fromJson(v));
       });
     }
   }
@@ -56,7 +51,7 @@ class Info {
   }
 }
 
-class Results {
+class Episode {
   int? id;
   String? name;
   String? airDate;
@@ -65,7 +60,7 @@ class Results {
   String? url;
   String? created;
 
-  Results(
+  Episode(
       {this.id,
         this.name,
         this.airDate,
@@ -74,7 +69,7 @@ class Results {
         this.url,
         this.created});
 
-  Results.fromJson(Map<String, dynamic> json) {
+  Episode.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     airDate = json['air_date'];
