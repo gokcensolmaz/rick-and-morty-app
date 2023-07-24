@@ -9,10 +9,6 @@ import 'package:rickandmorty_flutter/screens/splash_screen.dart';
 
 // TODO: LazyLoading eklemek
 // TODO: Arama eklemek / filtre
-// TODO: Kart yapısını düzenlemek
-// TODO: Karakter detay sayfası
-
-
 
 void main() {
   runApp(const MyApp());

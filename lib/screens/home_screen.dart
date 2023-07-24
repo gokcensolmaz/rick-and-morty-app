@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:rickandmorty_flutter/screens/character_screen.dart';
 import '../models/character_model.dart';
 import '../models/location_model.dart';
 import '../providers/api_provider.dart';
@@ -10,10 +10,10 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
-  _HomeState createState() => _HomeState();
+  HomeState createState() => HomeState();
 }
 
-class _HomeState extends State<HomeScreen> {
+class HomeState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
@@ -65,11 +65,14 @@ class LocationList extends StatelessWidget {
       child: Column(
         children: <Widget>[
           ButtonsTabBar(
-            backgroundColor: Color(0xFE61ABC7),
-            unselectedBackgroundColor: Color(0xFF93EC67),
-            unselectedLabelStyle: const TextStyle(color: Colors.black),
+            backgroundColor: const Color(0xFE61ABC7),
+            unselectedBackgroundColor: const Color(0xFF93EC67),
+            unselectedLabelStyle:
+                const TextStyle(color: Colors.black, fontFamily: 'Avenir'),
             labelStyle: const TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Avenir'),
             tabs: List<Widget>.generate(
               apiProvider.locations.length,
               (index) {
@@ -137,7 +140,8 @@ class CharacterList extends StatelessWidget {
                       } else {
                         final character = snapshot.data;
                         if (character != null) {
-                          return CharacterCard(character: character);
+                          return CharacterCard(
+                              character: character, index: index);
                         } else {
                           return const SizedBox.shrink(); // Handle empty data
                         }
@@ -153,28 +157,54 @@ class CharacterList extends StatelessWidget {
             }
           }
         });
-
-    throw UnimplementedError();
   }
 }
-class CharacterCard extends StatelessWidget {
-  const CharacterCard({Key? key, required this.character}) : super(key: key);
 
+class CharacterCard extends StatelessWidget {
+  const CharacterCard({Key? key, required this.character, required this.index})
+      : super(key: key);
+  final int index;
   final Character character;
+
+  Icon _getIconByGender(String? gender) {
+    if (gender == 'Female') {
+      return const Icon(Icons.female, color: Colors.white, size: 30);
+    } else if (gender == 'Male') {
+      return const Icon(Icons.male, color: Colors.white, size: 30);
+    } else {
+      return const Icon(Icons.transgender, color: Colors.white, size: 30);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      color:
+          (index % 2 == 0) ? const Color(0xFF4C4767) : const Color(0x994C4767),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundImage: NetworkImage(character.image ?? ''),
-        ),
-        title: Text(character.name ?? 'Unknown Character'),
-        subtitle: Text('Status: ${character.status ?? 'Unknown'}'),
-        // You can display more character details here if needed
-      ),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 20, horizontal: 18),
+          leading: SizedBox(
+            height: 120,
+            width: 80,
+            child: Image(
+              image: NetworkImage(character.image ?? ''),
+              fit: BoxFit.fill,
+            ),
+          ),
+          title: Text(character.name ?? 'Unknown Character',
+              textAlign: TextAlign.left),
+          titleTextStyle: const TextStyle(
+              fontSize: 24, color: Colors.white, fontFamily: 'Avenir'),
+          trailing: _getIconByGender(character.gender),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CharacterScreen(character),
+              ),
+            );
+          }),
     );
   }
 }
-
-
