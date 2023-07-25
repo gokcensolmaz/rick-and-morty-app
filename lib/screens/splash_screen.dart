@@ -3,7 +3,6 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter_gif/flutter_gif.dart';
 import 'package:is_first_run/is_first_run.dart';
 import 'package:rickandmorty_flutter/screens/home_screen.dart';
-import 'package:rickandmorty_flutter/main.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -34,7 +33,7 @@ class SplashScreenPage extends State<SplashScreen> with TickerProviderStateMixin
   void initState() {
     controller.repeat(min: 0, max: 140, period: const Duration(milliseconds: 1250));
     super.initState();
-    SchedulerBinding.instance.addPostFrameCallback((_) {
+   SchedulerBinding.instance.addPostFrameCallback((_) {
       checkFirstRun();
       splashScreen(context);
     });
@@ -65,28 +64,24 @@ class SplashScreenPage extends State<SplashScreen> with TickerProviderStateMixin
       backgroundColor: Color(0xFE4C4767),
       body: Center(
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Align(
-              heightFactor: 1,
-              child: Container(
-                height: 400,
-                width: 500,
-                decoration: BoxDecoration(
-                  image: const DecorationImage(
-                    image: AssetImage('lib/assets/logo.png'),
-                  ),
-                  borderRadius: BorderRadius.circular(6),
+            Container(
+              height: 170,
+              width: 700,
+              decoration: BoxDecoration(
+                image: const DecorationImage(
+                  fit: BoxFit.fitWidth,
+                  image: AssetImage('lib/assets/logo.png'),
                 ),
+                borderRadius: BorderRadius.circular(6),
               ),
             ),
-            Container(
-              height: 300,
-              width: 400,
-              child: GifImage(
+             GifImage(
                   controller: controller,
                   image: AssetImage('lib/assets/portal-gun.gif')
               ),
-            ),
+
              Text(
               welcomeText,
               style: const TextStyle(

@@ -93,7 +93,7 @@ class CharacterState extends State<CharacterScreen> {
                   const SizedBox(height: 5),
                   ListTile(
                     title: const Text(
-                      'Specy:',
+                      'Species:',
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         fontFamily: 'Avenir',
