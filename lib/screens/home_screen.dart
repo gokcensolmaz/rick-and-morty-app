@@ -25,29 +25,29 @@ class HomeState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final apiProvider = Provider.of<ApiProvider>(context);
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              height: 200,
-              width: 300,
-              decoration: BoxDecoration(
-                image: const DecorationImage(
+      body: Column(
+        children: <Widget>[
+          const SizedBox(height: 40),
+          SizedBox(
+            child: Container(
+              height: 130,
+              width: 200,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
                   image: AssetImage('lib/assets/logo.png'),
                 ),
-                borderRadius: BorderRadius.circular(6),
               ),
             ),
-            Expanded(
-              child: apiProvider.locations.isNotEmpty
-                  ? LocationList(apiProvider: apiProvider)
-                  : const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+          ),
+          Expanded(
+            child: apiProvider.locations.isNotEmpty
+                ? LocationList(apiProvider: apiProvider)
+                : const Center(
+                  child: CircularProgressIndicator(),
             ),
-          ],
-        ),
+          ),
+
+        ],
       ),
     );
   }
@@ -61,6 +61,7 @@ class LocationList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
+
       length: apiProvider.locations.length,
       child: Column(
         children: <Widget>[
@@ -122,33 +123,38 @@ class CharacterList extends StatelessWidget {
           } else {
             final location = snapshot.data;
             if (location != null && location.residents!.isNotEmpty) {
-              return ListView.builder(
-                itemCount: location.residents?.length,
-                itemBuilder: (context, index) {
-                  final residentUrl = location.residents?[index];
-                  return FutureBuilder<Character>(
-                    future: apiProvider.getCharacterByUrl(residentUrl!),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Center(
-                          child: Text('Error: ${snapshot.error}'),
-                        );
-                      } else {
-                        final character = snapshot.data;
-                        if (character != null) {
-                          return CharacterCard(
-                              character: character, index: index);
+              return MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                child: ListView.builder(
+                  itemCount: location.residents?.length,
+                  itemBuilder: (context, index) {
+                    final residentUrl = location.residents?[index];
+                    return FutureBuilder<Character>(
+                      future: apiProvider.getCharacterByUrl(residentUrl!),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Center(
+                            child: Text('Error: ${snapshot.error}'),
+                          );
                         } else {
-                          return const SizedBox.shrink(); // Handle empty data
+                          final character = snapshot.data;
+                          if (character != null) {
+                            return CharacterCard(
+                                character: character, index: index);
+                          } else {
+                            print("222 in else shrink");
+                            return const SizedBox.shrink(); // Handle empty data
+                          }
                         }
-                      }
-                    },
-                  );
-                },
+                      },
+                    );
+                  },
+                ),
               );
             } else {
               return const Center(
@@ -172,7 +178,7 @@ class CharacterCard extends StatelessWidget {
     } else if (gender == 'Male') {
       return const Icon(Icons.male, color: Colors.white, size: 30);
     } else {
-      return const Icon(Icons.transgender, color: Colors.white, size: 30);
+      return const Icon(Icons.question_mark, color: Colors.white, size: 30);
     }
   }
 

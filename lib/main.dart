@@ -1,14 +1,7 @@
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:rickandmorty_flutter/providers/api_provider.dart';
-import 'package:rickandmorty_flutter/screens/home_screen.dart';
 import 'package:rickandmorty_flutter/screens/splash_screen.dart';
-
-// TODO: LazyLoading eklemek
-// TODO: Arama eklemek / filtre
 
 void main() {
   runApp(const MyApp());
