@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:provider/provider.dart';
 import 'package:rickandmorty_flutter/screens/character_screen.dart';
+import 'package:rickandmorty_flutter/widgets/search_delegate.dart';
 import '../models/character_model.dart';
 import '../models/location_model.dart';
 import '../providers/api_provider.dart';
@@ -14,6 +15,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeState extends State<HomeScreen> {
+
   @override
   void initState() {
     super.initState();
@@ -39,16 +41,30 @@ class HomeState extends State<HomeScreen> {
               ),
             ),
           ),
+          Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: ListTile(
+                leading: Text("Find Character..."),
+                trailing: Icon(Icons.search),
+                onTap: () => showSearch(context: context, delegate: SearchCharacter(apiProvider)) ,
+              )
+            ),
+          ),
+
           Expanded(
             child: apiProvider.locations.isNotEmpty
                 ? LocationList(apiProvider: apiProvider)
                 : const Center(
-                  child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(),
             ),
-          ),
-
-        ],
-      ),
+          )
+          ,
+        ]
+        ,
+      )
+      ,
     );
   }
 }
@@ -61,7 +77,6 @@ class LocationList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-
       length: apiProvider.locations.length,
       child: Column(
         children: <Widget>[
@@ -69,18 +84,18 @@ class LocationList extends StatelessWidget {
             backgroundColor: const Color(0xFE61ABC7),
             unselectedBackgroundColor: const Color(0xFF93EC67),
             unselectedLabelStyle:
-                const TextStyle(color: Colors.black, fontFamily: 'Avenir'),
+            const TextStyle(color: Colors.black, fontFamily: 'Avenir'),
             labelStyle: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
                 fontFamily: 'Avenir'),
             tabs: List<Widget>.generate(
               apiProvider.locations.length,
-              (index) {
+                  (index) {
                 final location = apiProvider.locations[index];
                 return Tab(
                   text:
-                      location.name ?? '', // Set the tab text to location name
+                  location.name ?? '', // Set the tab text to location name
                 );
               },
             ),
@@ -89,7 +104,7 @@ class LocationList extends StatelessWidget {
             child: TabBarView(
               children: List<Widget>.generate(
                 apiProvider.locations.length,
-                (index) {
+                    (index) {
                   final location = apiProvider.locations[index];
                   return CharacterList(locationId: location.id!);
                 },
@@ -133,7 +148,8 @@ class CharacterList extends StatelessWidget {
                     return FutureBuilder<Character>(
                       future: apiProvider.getCharacterByUrl(residentUrl!),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return const Center(
                             child: CircularProgressIndicator(),
                           );
@@ -147,7 +163,6 @@ class CharacterList extends StatelessWidget {
                             return CharacterCard(
                                 character: character, index: index);
                           } else {
-                            print("222 in else shrink");
                             return const SizedBox.shrink(); // Handle empty data
                           }
                         }
@@ -186,16 +201,19 @@ class CharacterCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       color:
-          (index % 2 == 0) ? const Color(0xFF4C4767) : const Color(0x994C4767),
+      (index % 2 == 0) ? const Color(0xFF4C4767) : const Color(0x994C4767),
       child: ListTile(
           contentPadding:
-              const EdgeInsets.symmetric(vertical: 20, horizontal: 18),
+          const EdgeInsets.symmetric(vertical: 20, horizontal: 18),
           leading: SizedBox(
             height: 120,
             width: 80,
-            child: Image(
-              image: NetworkImage(character.image ?? ''),
-              fit: BoxFit.fill,
+            child: Hero(
+              tag: character.id!,
+              child: Image(
+                image: NetworkImage(character.image ?? ''),
+                fit: BoxFit.fill,
+              ),
             ),
           ),
           title: Text(character.name ?? 'Unknown Character',
