@@ -15,7 +15,7 @@ The Home Screen displays a logo at the top and a tab bar showing different locat
 ## Character Detail Screen
 The Character Detail Screen shows detailed information about a specific character. It displays the character's image, status, species, gender, location, and episodes they appear in.
 
-<img src="https://github.com/gokcensolmaz/rick-and-morty-app/assets/61111670/c2075a13-0543-44bf-b32b-855c63939993" alt="Character Detail" width="30%" height="30%">
+<img src="https://github.com/gokcensolmaz/rick-and-morty-app/assets/61111670/5ba2a131-9a87-4e31-a9c9-f36241f8d8b3" alt="Character Detail" width="30%" height="30%">
 
 ## How to Run the App
 1. Clone this repository to your local machine.
