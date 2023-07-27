@@ -1,36 +1,56 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../models/character_model.dart';
+import '../providers/api_provider.dart';
 
 class CharacterScreen extends StatefulWidget {
   final Character character;
 
-  CharacterScreen(this.character,
-      {super.key}); //  ructor should pass the character parameter
+  CharacterScreen(this.character, {super.key});
 
   @override
   CharacterState createState() => CharacterState(character);
 }
 
 class CharacterState extends State<CharacterScreen> {
-  CharacterState(character); //  ructor should pass the character parameter
+  CharacterState(character);
 
   String? getEpisodeNumber(episodeUrls) {
     List<dynamic> episodeNumbers = episodeUrls.map((url) {
-      String episodeNumberStr =
-          url.split('/').last; // Extract the last part of the URL
-      return int.tryParse(episodeNumberStr) ??
-          -1; // Parse the episode number as an integer
+      String episodeNumberStr = url.split('/').last;
+      return int.tryParse(episodeNumberStr) ?? -1;
     }).toList();
     return episodeNumbers.join(', ');
+  }
+
+  Icon _getIconByGender(String? gender) {
+    if (gender == 'Female') {
+      return const Icon(Icons.female, color: Colors.black, size: 30);
+    } else if (gender == 'Male') {
+      return const Icon(Icons.male, color: Colors.white, size: 30);
+    } else {
+      return const Icon(Icons.question_mark, color: Colors.white, size: 30);
+    }
+  }
+
+  Icon _getIconByStatus(String? status) {
+    if (status == 'Alive') {
+      return const Icon(Icons.circle, color: Colors.green, size: 10);
+    } else if (status == 'Dead') {
+      return const Icon(Icons.circle, color: Colors.red, size: 15);
+    } else {
+      return const Icon(Icons.circle, color: Colors.grey, size: 15);
+    }
   }
 
   String? convertDate(date) {
     String dateTimeString = date;
 
     DateTime dateTime = DateTime.parse(dateTimeString);
-    String formattedDateTime = DateFormat('d MMM y,\n HH:mm:ss').format(dateTime);
+    String formattedDateTime =
+        DateFormat('d MMM y,\n HH:mm:ss').format(dateTime);
 
     return formattedDateTime;
   }
@@ -38,13 +58,11 @@ class CharacterState extends State<CharacterScreen> {
   @override
   void initState() {
     super.initState();
-    print("character");
-    // You can perform initialization tasks here
   }
 
   @override
   Widget build(BuildContext context) {
-    // Implement the build method to return the UI of the widget
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -53,154 +71,169 @@ class CharacterState extends State<CharacterScreen> {
               fontFamily: 'Avenir', fontWeight: FontWeight.w600, fontSize: 28),
         ),
       ),
-      body: Center(
-        child: Column(children: [
-          Container(
-              margin: const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-              width: 275,
-              height: 275,
-              child: Image(
-                  image: NetworkImage(widget.character.image ?? ''),
-                  fit: BoxFit.contain)),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-            // Horizontal: 20, Vertical: 20, Bottom: 0
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Hero(
+                tag: widget.character.id!,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: SizedBox(
+                    height: 270,
+                    width: 270,
+                    child: Image(
+                      image: NetworkImage(widget.character.image ?? ''),
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              ),
+              Column(
                 children: [
-                  ListTile(
-                    title: const Text(
-                      'Status:',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontFamily: 'Avenir',
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    trailing: Text(
-                      widget.character.status ?? 'Unknown Status',
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(
-                        fontFamily: 'Avenir',
-                        fontSize: 22,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  ListTile(
-                    title: const Text(
-                      'Species:',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontFamily: 'Avenir',
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    trailing: Text(
-                      widget.character.species ?? 'Unknown Species',
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(
-                        fontFamily: 'Avenir',
-                        fontSize: 22,
-                        fontWeight: FontWeight.normal,
+                  Card(
+                    color: const Color(0x994C4767),
+                    child: SizedBox(
+                      height: 85,
+                      width: 100,
+                      child: Column(
+                        children: [
+                          const Text(
+                            "Gender: ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              fontFamily: 'Avenir',
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          _getIconByGender(widget.character.gender),
+                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 5),
-                  ListTile(
-                      title: const Text(
-                      'Gender:',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontFamily: 'Avenir',
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    trailing: Text(
-                      widget.character.gender ?? 'Unknown Gender',
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(
-                        fontFamily: 'Avenir',
-                        fontSize: 22,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  ListTile(
-                      title: const Text(
-                      'Location:',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontFamily: 'Avenir',
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    trailing: Text(
-                      widget.character.location?.name ?? 'Unknown Location',
-                      textAlign: TextAlign.right,
-                      style: const TextStyle(
-                        fontFamily: 'Avenir',
-                        fontSize: 22,
-                        fontWeight: FontWeight.normal,
+                  Card(
+                    color: const Color(0x994C4767),
+                    child: SizedBox(
+                      height: 85,
+                      width: 100,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text("Status: ",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                fontFamily: 'Avenir',
+                              )),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _getIconByStatus(widget.character.status),
+                              const SizedBox(width: 6),
+                              Text("${widget.character.status}",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    fontSize: 18,
+                                    fontFamily: 'Avenir',
+                                  )),
+                            ],
+                          )
+                        ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 5),
-                  ListTile(
-                      title: const Text(
-                      'Episodes:',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontFamily: 'Avenir',
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    trailing: Text(
-                      getEpisodeNumber(widget.character.episode) ??
-                          'Unknown Episode',
-                      style: const TextStyle(
-                        fontFamily: 'Avenir',
-                        fontSize: 22,
-                        fontWeight: FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  ListTile(
-                    title: const Text(
-                      'Created at \n (in API):',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontFamily: 'Avenir',
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    trailing: Text(
-                      convertDate(widget.character.created) ??
-                          'Unknown Created',
-                      style: const TextStyle(
-                        fontFamily: 'Avenir',
-                        fontSize: 22,
-                        fontWeight: FontWeight.normal,
+                  Card(
+                    color: const Color(0x994C4767),
+                    child: SizedBox(
+                      height: 85,
+                      width: 100,
+                      child: Column(
+                        children: [
+                          const Text("Species: ",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                fontFamily: 'Avenir',
+                              )),
+                          const SizedBox(height: 10),
+                          Text(
+                            "${widget.character.species}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.normal,
+                              fontSize: 18,
+                              fontFamily: 'Avenir',
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ],
+              )
+            ],
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: SizedBox(
+              height: 500,
+              width: 380,
+              child: Column(
+                children: [
+                  Text(
+                    "EPISODES",
+                    style: TextStyle(
+                        fontFamily: 'Avenir',
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  EpisodeList(size: size, character: widget.character,),
+                ],
               ),
             ),
-          )
-        ]),
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class EpisodeList extends StatefulWidget {
+  const EpisodeList({super.key, required this.size, required this.character});
+
+  final Size size;
+  final Character character;
+
+  @override
+  State<StatefulWidget> createState() => _EpisodeListState();
+}
+
+class _EpisodeListState extends State<EpisodeList> {
+  @override
+  void initState() {
+    final apiProvider = Provider.of<ApiProvider>(context, listen: false);
+    apiProvider.getEpisodes(widget.character);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final apiProvider = Provider.of<ApiProvider>(context);
+    return SizedBox(
+      height: widget.size.height * 0.5,
+      child: ListView.builder(
+          itemCount: apiProvider.episodes.length,
+          itemBuilder: (context, index) {
+            final episode = apiProvider.episodes[index];
+            return ListTile(
+                leading: Text(episode.episode!,style: TextStyle(fontSize: 12),),
+                title: Text(episode.name!),
+                trailing: Text(episode.airDate!));
+          }),
     );
   }
 }
